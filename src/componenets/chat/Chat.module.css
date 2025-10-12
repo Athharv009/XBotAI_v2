@@ -1,0 +1,78 @@
+.chatLogo {
+  width: 33.5791015625px;
+  height: 32px;
+  opacity: 1;
+  object-fit: cover;
+  border-radius: 12px;
+  box-shadow: 0px 4px 4px 0px #00000040;
+}
+
+.chatEdit {
+  width: 24px;
+  height: 24px;
+  opacity: 1;
+}
+
+.chatEdit:hover {
+    transform: scale(1.1);
+    transition: transform 0.2s;
+
+}
+
+.chatText {
+  font-family: "Ubuntu", sans-serif;
+  font-weight: 400;
+  font-style: Regular;
+  font-size: 20px;
+  line-height: 100%;
+  letter-spacing: 0%;
+}
+
+.chatComponent {
+    background: linear-gradient(0deg, #D7C7F4, #D7C7F4),
+linear-gradient(0deg, #D7C7F4, #D7C7F4),
+linear-gradient(0deg, #D7C7F4, #D7C7F4),
+linear-gradient(0deg, #D7C7F4, #D7C7F4);
+    box-shadow: -4px 4px 10px 0px #00000026;
+    height: 47px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 20px;
+}
+
+.mainChatTextEdit {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+
+.pastBtn {
+font-weight: 700;
+font-style: Bold;
+font-size: 16px;
+line-height: 100%;
+letter-spacing: 0%;
+color: #414146;
+background: linear-gradient(0deg, #D7C7F4, #D7C7F4),
+linear-gradient(0deg, #D7C7F4, #D7C7F4),
+linear-gradient(0deg, #D7C7F4, #D7C7F4),
+linear-gradient(0deg, #D7C7F4, #D7C7F4);
+border: none;
+border-radius: 10px;
+height: 39px;
+width: 100%;
+}
+
+.pastConversationContainer {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+}
+
+.mainChatContainer {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}

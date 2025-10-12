@@ -1,0 +1,31 @@
+import { Link } from "react-router";
+import styles from "./Chat.module.css";
+
+export default function Chat() {
+  return (
+    <div className={styles.mainChatContainer}>
+      <div className={styles.chatComponent}>
+        <img
+          src={require("../../assets/logo.png")}
+          alt="Logo"
+          className={styles.chatLogo}
+          height={"100%"}
+          width={"100%"}
+        />
+        <div className={styles.mainChatTextEdit}>
+          <h2 className={styles.chatText}>New Chat</h2>
+          <img
+            src={require("../../assets/edit.png")}
+            alt="Logo"
+            className={styles.chatEdit}
+          />
+        </div>
+      </div>
+      <div className={styles.pastConversationContainer}>
+        <Link to={'/history'}>
+          <button className={styles.pastBtn}>Past Conversations</button>
+        </Link>
+      </div>
+    </div>
+  );
+}
