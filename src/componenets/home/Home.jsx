@@ -1,19 +1,24 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useContext } from "react";
 import Chat from "../chat/Chat";
 import styles from "./Home.module.css";
+import { useNavigate } from "react-router-dom";
+import { AppContext } from "../../AppContext";
+import ChatBoxComponent from "../chatBox/ChatBoxComponent";
 
 export default function Home() {
   const [inputBox, setInputBox] = useState("");
-  const [debounceTimeout, setDebounceTimeout] = useState("");
+  const { setDebounceTimeout } = useContext(AppContext);
   const [toggler, setToggler] = useState(false);
   const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
+  const { addInputs } = useContext(AppContext);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const handler = setTimeout(() => {
       setDebounceTimeout(inputBox);
     }, 500);
     return () => clearTimeout(handler);
-  }, [inputBox]);
+  }, [inputBox, setDebounceTimeout]);
 
   useEffect(() => {
     const handleResize = () => setIsMobile(window.innerWidth <= 768);
@@ -24,7 +29,8 @@ export default function Home() {
   const handleAskBtn = (e) => {
     e.preventDefault();
     if (!inputBox.trim()) return;
-    console.log("Message to BotAI", inputBox);
+    addInputs(inputBox);
+    navigate("/conversations");
   };
 
   return (
@@ -111,22 +117,7 @@ export default function Home() {
             </div>
           }
 
-          <div className={styles.chatBoxComponenet}>
-            <form className={styles.chatboxSection} onSubmit={handleAskBtn}>
-              <input
-                className={styles.inputBox}
-                type="text"
-                placeholder="Message Bot AI…"
-                onChange={(e) => setInputBox(e.target.value)}
-              />
-              <button type="submit" className={styles.btn}>
-                Ask
-              </button>
-              <button type="button" className={styles.btn}>
-                Save
-              </button>
-            </form>
-          </div>
+          <ChatBoxComponent setInputBox={setInputBox} handleAskBtn={handleAskBtn}/>
         </div>
       </div>
     </div>
