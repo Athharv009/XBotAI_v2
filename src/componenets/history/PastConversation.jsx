@@ -10,12 +10,14 @@ export default function PastConversation() {
   const [savedChats, setSavedChats] = useState({});
   const [feedbacks, setFeedbacks] = useState([]);
 
+  // Handle screen resize
   useEffect(() => {
     const handleResize = () => setIsMobile(window.innerWidth <= 768);
     window.addEventListener("resize", handleResize);
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
+  // Load chats & feedbacks from localStorage
   useEffect(() => {
     const chats = JSON.parse(localStorage.getItem("chatMessages")) || {};
     const feedbackData = JSON.parse(localStorage.getItem("feedbacks")) || [];
@@ -23,6 +25,7 @@ export default function PastConversation() {
     setFeedbacks(feedbackData);
   }, []);
 
+  // Helper: Get feedback for a date
   const getFeedbackForDate = (dateString) => {
     const fb = feedbacks.find((f) => f.date === dateString);
     return fb ? fb.feedback : null;
@@ -30,6 +33,7 @@ export default function PastConversation() {
 
   return (
     <div className={styles.home}>
+      {/* Sidebar Chat Section */}
       <div
         className={`${styles.chatSection} ${
           isMobile && toggler ? styles.drawerOpen : ""
@@ -50,13 +54,17 @@ export default function PastConversation() {
       <div className={hstyles.content}>
         <div className={hstyles.mobileViewToggler}>
           {isMobile && (
-            <button className={styles.menuBtn} onClick={() => setToggler(true)}>
+            <button
+              className={styles.menuBtn}
+              onClick={() => setToggler(true)}
+            >
               ☰
             </button>
           )}
           <h1 className={hstyles.heading}>Conversation History</h1>
         </div>
 
+        {/* Render saved conversations */}
         <div>
           {Object.keys(savedChats).length === 0 ? (
             <p style={{ textAlign: "center", marginTop: "30px" }}>
@@ -66,9 +74,12 @@ export default function PastConversation() {
             Object.entries(savedChats)
               .sort((a, b) => b[0].localeCompare(a[0]))
               .map(([chatId, chatData]) => {
-                const dateOnly = chatId.split("_")[1]; // date string
-                const timestamp = chatId.split("_")[2]; // timestamp
+                const parts = chatId.split("_");
+                const timestamp = parts[parts.length - 1]; // last part as timestamp
                 const readableDate = new Date(Number(timestamp)).toLocaleString();
+                const dateOnly = new Date(Number(timestamp))
+                  .toISOString()
+                  .split("T")[0];
                 const feedbackText = getFeedbackForDate(dateOnly);
 
                 return (
@@ -150,7 +161,7 @@ export default function PastConversation() {
                       )}
                     </div>
 
-                    {/* ✅ Feedback Section */}
+                    {/* Feedback Section */}
                     {feedbackText && (
                       <div className={hstyles.feedbackSection}>
                         <h3>Feedback:</h3>

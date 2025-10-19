@@ -17,7 +17,6 @@ export default function ChatBoxComponent({ setInputBox, handleAskBtn }) {
     const savedChats = JSON.parse(localStorage.getItem("chatMessages")) || {};
     const newKey = `chat_${today}_${Date.now()}`;
 
-    // Keep only today's chats
     const todayChats = Object.fromEntries(
       Object.entries(savedChats).filter(([key]) => key.includes(today))
     );

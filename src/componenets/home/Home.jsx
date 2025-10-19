@@ -79,7 +79,7 @@ export default function Home() {
                 ☰
               </button>
             )}
-            <h1 className={styles.bot_h1}>Bot AI</h1>
+            <header className={styles.bot_h1}>Bot AI</header>
           </div>
         )}
 
