@@ -44,7 +44,7 @@ export default function ChatBoxComponent({ setInputBox, handleAskBtn }) {
         <input
           className={styles.inputBox}
           type="text"
-          placeholder="Message Bot AI…"
+          placeholder='Message Bot AI...'
           onChange={(e) => setInputBox(e.target.value)}
         />
         <button type="submit" className={styles.btn}>

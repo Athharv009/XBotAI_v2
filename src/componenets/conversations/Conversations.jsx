@@ -213,7 +213,7 @@ export default function Conversations() {
               <input
                 className={styles.inputBox}
                 type="text"
-                placeholder="Message Bot AI…"
+                placeholder='Message Bot AI...'
                 value={inputBox}
                 onChange={(e) => setInputBox(e.target.value)}
               />
