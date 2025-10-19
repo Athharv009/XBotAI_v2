@@ -1,4 +1,5 @@
 import { useContext, useEffect, useState } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
 import styles from "../home/Home.module.css";
 import Chat from "../chat/Chat";
 import cstyles from "./Conversations.module.css";
@@ -9,15 +10,33 @@ export default function Conversations() {
   const [inputBox, setInputBox] = useState("");
   const [toggler, setToggler] = useState(false);
   const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
-  const [typingMessage, setTypingMessage] = useState(""); // For typing animation
+  const [typingMessage, setTypingMessage] = useState("");
+  const [showModal, setShowModal] = useState(false);
+  const [feedback, setFeedback] = useState("");
+  const navigate = useNavigate();
 
   const { inputs, addInputs } = useContext(AppContext);
+  const location = useLocation();
+  const prefilledMessage = location.state?.message || "";
 
   useEffect(() => {
     const handleResize = () => setIsMobile(window.innerWidth <= 768);
     window.addEventListener("resize", handleResize);
     return () => window.removeEventListener("resize", handleResize);
   }, []);
+
+  useEffect(() => {
+    if (prefilledMessage) {
+      setInputBox(prefilledMessage);
+      setTimeout(() => {
+        document
+          .querySelector("form")
+          ?.dispatchEvent(
+            new Event("submit", { cancelable: true, bubbles: true })
+          );
+      }, 400);
+    }
+  }, [prefilledMessage]);
 
   const handleAskBtn = (e) => {
     e.preventDefault();
@@ -39,7 +58,7 @@ export default function Conversations() {
 
     const replyText = matched
       ? matched.response
-      : "As an AI Language Model, I don’t have the details";
+      : "Sorry, Did not understand your query!";
 
     setTypingMessage("");
     let i = 0;
@@ -56,6 +75,36 @@ export default function Conversations() {
         setTypingMessage("");
       }
     }, 25);
+  };
+
+  const handleSaveBtn = () => {
+    setShowModal(true);
+  };
+
+  const handleFeedbackSubmit = () => {
+    const today = new Date().toISOString().split("T")[0];
+    const savedChats = JSON.parse(localStorage.getItem("chatMessages")) || {};
+    const feedbacks = JSON.parse(localStorage.getItem("feedbacks")) || [];
+
+    const newKey = `chat_${today}_${Date.now()}`;
+    const todayChats = Object.fromEntries(
+      Object.entries(savedChats).filter(([key]) => key.includes(today))
+    );
+
+    todayChats[newKey] = inputs;
+
+    localStorage.setItem("chatMessages", JSON.stringify(todayChats));
+    feedbacks.push({ date: today, feedback });
+    localStorage.setItem("feedbacks", JSON.stringify(feedbacks));
+
+    setShowModal(false);
+    setFeedback("");
+    addInputs([]);
+    alert("Chat and feedback saved successfully!");
+    navigate("/");
+    setTimeout(() => {
+      window.location.reload();
+    }, 300);
   };
 
   return (
@@ -112,17 +161,32 @@ export default function Conversations() {
                 </div>
                 <div className={cstyles.time}>
                   <small>{msg.time}</small>
-                  {
-                    msg.sender === 'Soul AI' ? 
-                    <div style={{display: "flex", alignItems: "center", gap: "10px"}}>
-                      <img src={require('../../assets/like.png')} alt="Like" className={cstyles.like} />
-                      <img src={require('../../assets/like.png')} alt="DisLike" style={{transform: 'rotate(180deg)'}} className={cstyles.like}/>
-                    </div> : null
-                  }
+                  {msg.sender === "Soul AI" ? (
+                    <div
+                      style={{
+                        display: "flex",
+                        alignItems: "center",
+                        gap: "10px",
+                      }}
+                    >
+                      <img
+                        src={require("../../assets/like.png")}
+                        alt="Like"
+                        className={cstyles.like}
+                      />
+                      <img
+                        src={require("../../assets/like.png")}
+                        alt="DisLike"
+                        style={{ transform: "rotate(180deg)" }}
+                        className={cstyles.like}
+                      />
+                    </div>
+                  ) : null}
                 </div>
               </div>
             </div>
           ))}
+
           {typingMessage && (
             <div className={cstyles.chatCardContainer}>
               <div className={cstyles.imgUser}>
@@ -156,13 +220,34 @@ export default function Conversations() {
               <button type="submit" className={styles.btn}>
                 Ask
               </button>
-              <button type="button" className={styles.btn}>
+              <button
+                type="button"
+                className={styles.btn}
+                onClick={handleSaveBtn}
+              >
                 Save
               </button>
             </form>
           </div>
         </div>
       </div>
+
+      {showModal && (
+        <div className={cstyles.modalOverlay}>
+          <div className={cstyles.modalContent}>
+            <h2>Feedback</h2>
+            <textarea
+              placeholder="Write your feedback here..."
+              value={feedback}
+              onChange={(e) => setFeedback(e.target.value)}
+            ></textarea>
+            <div className={cstyles.modalBtns}>
+              <button onClick={handleFeedbackSubmit}>Submit</button>
+              <button onClick={() => setShowModal(false)}>Cancel</button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

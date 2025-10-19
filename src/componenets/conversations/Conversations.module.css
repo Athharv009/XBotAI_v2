@@ -11,6 +11,61 @@
     padding-bottom: 20px;
 }
 
+.modalOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.4);
+  display: flex;
+  justify-content: center;
+  align-items: center; /* Vertically centered */
+  z-index: 999;
+}
+
+.modalContent {
+  background: white;
+  padding: 25px;
+  border-radius: 12px;
+  width: 90%;
+  max-width: 400px;
+  box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
+  text-align: center;
+}
+
+.modalContent textarea {
+  width: 100%;
+  height: 100px;
+  margin-top: 10px;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  resize: none;
+  outline: none;
+}
+
+.modalBtns {
+  display: flex;
+  justify-content: space-around;
+  margin-top: 15px;
+}
+
+.modalBtns button {
+  padding: 8px 16px;
+  border: none;
+  border-radius: 8px;
+  background: #007bff;
+  color: white;
+  cursor: pointer;
+  font-weight: 500;
+}
+
+.modalBtns button:last-child {
+  background: gray;
+}
+
+
 .imgUser {
     border-radius: 50%;
     object-fit: cover;
