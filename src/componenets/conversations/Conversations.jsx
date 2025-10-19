@@ -94,7 +94,7 @@ export default function Conversations() {
     todayChats[newKey] = inputs;
 
     localStorage.setItem("chatMessages", JSON.stringify(todayChats));
-    feedbacks.push({ date: today, feedback });
+    feedbacks.push({ chatId: newKey, date: today, feedback });
     localStorage.setItem("feedbacks", JSON.stringify(feedbacks));
 
     setShowModal(false);
@@ -213,7 +213,7 @@ export default function Conversations() {
               <input
                 className={styles.inputBox}
                 type="text"
-                placeholder="Message Soul AI…"
+                placeholder="Message Bot AI…"
                 value={inputBox}
                 onChange={(e) => setInputBox(e.target.value)}
               />
