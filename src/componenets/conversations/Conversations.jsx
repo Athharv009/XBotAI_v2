@@ -157,7 +157,7 @@ export default function Conversations() {
               <div>
                 <div className={cstyles.textContent}>
                   <span className={cstyles.user}>{msg.sender}</span>
-                  <span>{msg.text}</span>
+                  <p>{msg.text}</p>
                 </div>
                 <div className={cstyles.time}>
                   <small>{msg.time}</small>
@@ -199,10 +199,10 @@ export default function Conversations() {
               <div>
                 <div className={cstyles.textContent}>
                   <span className={cstyles.user}>Soul AI</span>
-                  <span>{typingMessage}</span>
+                  <p>{typingMessage}</p>
                 </div>
                 <div className={cstyles.time}>
-                  <small>typing...</small>
+                  <p>typing...</p>
                 </div>
               </div>
             </div>
