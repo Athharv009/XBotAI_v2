@@ -119,15 +119,15 @@ export default function Home() {
           {
             isMobile && 
             <div className={styles.mobileOptionView}>
-              <div className={styles.optionCard}>
+              <div className={styles.optionCard} onClick={handleMessage1}>
                 <h3>Hi, what is the weather</h3>
                 <p>Get immediate AI generated response</p>
               </div>
-              <div className={styles.optionCard}>
+              <div className={styles.optionCard} onClick={handleMessage2}>
                 <h3>Hi, what is my location</h3>
                 <p>Get immediate AI generated response</p>
               </div>
-              <div className={styles.optionCard}>
+              <div className={styles.optionCard} onClick={handleMessage4}>
                 <h3>Hi, how are you</h3>
                 <p>Get immediate AI generated response</p>
               </div>
