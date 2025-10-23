@@ -39,47 +39,37 @@ export default function Conversations() {
   }, [prefilledMessage]);
 
   const handleAskBtn = (e) => {
-    e.preventDefault();
-    if (!inputBox.trim()) return;
+  e.preventDefault();
+  if (!inputBox.trim()) return;
 
-    const time = new Date().toLocaleTimeString([], {
-      hour: "2-digit",
-      minute: "2-digit",
-    });
+  const time = new Date().toLocaleTimeString([], {
+    hour: "2-digit",
+    minute: "2-digit",
+  });
 
-    // Add user message
-    addInputs({ sender: "You", text: inputBox, time });
+  // Add user message
+  addInputs({ sender: "You", text: inputBox, time });
 
-    const userText = inputBox.toLowerCase().trim();
-    setInputBox("");
+  const userText = inputBox.toLowerCase().trim();
+  setInputBox("");
 
-    // ✅ Exact match for question text (case-insensitive)
-    const matched = sampleData.find(
-      (item) => item.question.toLowerCase() === userText
-    );
+  const matched = sampleData.find(
+    (item) => item.question.toLowerCase() === userText
+  );
 
-    // ✅ Use valid response if question found, else show fallback message
-    const replyText = matched
-      ? matched.response
-      : "Sorry, Did not understand your query!";
+  const replyText = matched
+    ? matched.response
+    : "Sorry, Did not understand your query!";
 
-    // Typing animation for bot
-    setTypingMessage("");
-    let i = 0;
-    const typingInterval = setInterval(() => {
-      setTypingMessage(replyText.slice(0, i + 1));
-      i++;
-      if (i === replyText.length) {
-        clearInterval(typingInterval);
-        const replyTime = new Date().toLocaleTimeString([], {
-          hour: "2-digit",
-          minute: "2-digit",
-        });
-        addInputs({ sender: "Soul AI", text: replyText, time: replyTime });
-        setTypingMessage("");
-      }
-    }, 25);
-  };
+  const replyTime = new Date().toLocaleTimeString([], {
+    hour: "2-digit",
+    minute: "2-digit",
+  });
+
+  // Directly add reply (no typing animation)
+  addInputs({ sender: "Soul AI", text: replyText, time: replyTime });
+};
+
 
   const handleSaveBtn = () => {
     setShowModal(true);
@@ -208,9 +198,6 @@ export default function Conversations() {
                 <div className={cstyles.textContent}>
                   <span className={cstyles.user}>Soul AI</span>
                   <p>{typingMessage}</p>
-                </div>
-                <div className={cstyles.time}>
-                  <p>typing...</p>
                 </div>
               </div>
             </div>
