@@ -1,44 +1,32 @@
-import { createContext, useState, useEffect } from "react";
+import { createContext, useEffect, useState } from "react";
 
 export const AppContext = createContext();
 
-export function AppProvider({ children }) {
-  const [debounceTimeout, setDebounceTimeout] = useState("");
+export default function AppProvider({ children }) {
   const [inputs, setInputs] = useState(() => {
-    // ✅ Load chats from localStorage when app starts
-    const saved = localStorage.getItem("inputs");
-    return saved ? JSON.parse(saved) : [];
+    try {
+      const saved = localStorage.getItem("inputs");
+      return saved ? JSON.parse(saved) : [];
+    } catch {
+      return [];
+    }
   });
 
-  // ✅ Save chats whenever inputs change
   useEffect(() => {
     localStorage.setItem("inputs", JSON.stringify(inputs));
   }, [inputs]);
 
-    const addInputs = (msg) => {
-    setInputs((prev) => {
-      const next = [...prev, msg];
-      // write immediately so tests (and quick refreshes) see the saved chat
-      try {
-        localStorage.setItem("inputs", JSON.stringify(next));
-      } catch (err) {
-        // ignore storage errors in tests/environment
-        console.warn("Could not write to localStorage", err);
-      }
-      return next;
-    });
+  const addInputs = (msg) => {
+    setInputs((prev) => [...prev, msg]);
   };
-
 
   const clearInputs = () => {
     setInputs([]);
-    localStorage.removeItem("inputs"); // clear stored chats too
+    localStorage.removeItem("inputs");
   };
 
   return (
-    <AppContext.Provider
-      value={{ debounceTimeout, setDebounceTimeout, inputs, addInputs, clearInputs }}
-    >
+    <AppContext.Provider value={{ inputs, addInputs, clearInputs }}>
       {children}
     </AppContext.Provider>
   );

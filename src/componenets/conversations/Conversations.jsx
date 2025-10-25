@@ -33,7 +33,8 @@ export default function Conversations() {
       parsed.forEach((msg) => addInputs(msg));
     }
   }
-}, []); 
+}, []);
+
 
 
   useEffect(() => {
