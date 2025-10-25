@@ -26,17 +26,16 @@ export default function Conversations() {
   }, []);
 
   useEffect(() => {
-    if (prefilledMessage) {
-      setInputBox(prefilledMessage);
-      setTimeout(() => {
-        document
-          .querySelector("form")
-          ?.dispatchEvent(
-            new Event("submit", { cancelable: true, bubbles: true })
-          );
-      }, 400);
-    }
-  }, [prefilledMessage]);
+  if (prefilledMessage) {
+    setInputBox(prefilledMessage);
+    document
+      .querySelector("form")
+      ?.dispatchEvent(
+        new Event("submit", { cancelable: true, bubbles: true })
+      );
+  }
+}, [prefilledMessage]);
+
 
   const handleAskBtn = (e) => {
   e.preventDefault();
