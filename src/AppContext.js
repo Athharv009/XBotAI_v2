@@ -15,9 +15,20 @@ export function AppProvider({ children }) {
     localStorage.setItem("inputs", JSON.stringify(inputs));
   }, [inputs]);
 
-  const addInputs = (msg) => {
-    setInputs((prev) => [...prev, msg]);
+    const addInputs = (msg) => {
+    setInputs((prev) => {
+      const next = [...prev, msg];
+      // write immediately so tests (and quick refreshes) see the saved chat
+      try {
+        localStorage.setItem("inputs", JSON.stringify(next));
+      } catch (err) {
+        // ignore storage errors in tests/environment
+        console.warn("Could not write to localStorage", err);
+      }
+      return next;
+    });
   };
+
 
   const clearInputs = () => {
     setInputs([]);
