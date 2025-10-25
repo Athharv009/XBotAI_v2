@@ -1,17 +1,16 @@
-import { createContext, useEffect, useState } from "react";
+import { createContext, useState, useEffect } from "react";
 
 export const AppContext = createContext();
 
-export default function AppProvider({ children }) {
+export function AppProvider({ children }) {
+  const [debounceTimeout, setDebounceTimeout] = useState("");
   const [inputs, setInputs] = useState(() => {
-    try {
-      const saved = localStorage.getItem("inputs");
-      return saved ? JSON.parse(saved) : [];
-    } catch {
-      return [];
-    }
+    // ✅ Load chats from localStorage when app starts
+    const saved = localStorage.getItem("inputs");
+    return saved ? JSON.parse(saved) : [];
   });
 
+  // ✅ Save chats whenever inputs change
   useEffect(() => {
     localStorage.setItem("inputs", JSON.stringify(inputs));
   }, [inputs]);
@@ -22,11 +21,13 @@ export default function AppProvider({ children }) {
 
   const clearInputs = () => {
     setInputs([]);
-    localStorage.removeItem("inputs");
+    localStorage.removeItem("inputs"); // clear stored chats too
   };
 
   return (
-    <AppContext.Provider value={{ inputs, addInputs, clearInputs }}>
+    <AppContext.Provider
+      value={{ debounceTimeout, setDebounceTimeout, inputs, addInputs, clearInputs }}
+    >
       {children}
     </AppContext.Provider>
   );
