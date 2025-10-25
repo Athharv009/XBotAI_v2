@@ -96,21 +96,21 @@ export default function Home() {
           <div className={styles.mainGroupOption}>
             <div className={styles.groupOption}>
               <div className={styles.optionCard} onClick={handleMessage1}>
-                <div>Hi, what is the weather</div>
+                <div>Hi, what is the weather?</div>
                 <p>Get immediate AI generated response</p>
               </div>
               <div className={styles.optionCard} onClick={handleMessage2}>
-                <div>Hi, what is my location</div>
+                <div>Hi, what is my location?</div>
                 <p>Get immediate AI generated response</p>
               </div>
             </div>
             <div className={styles.groupOption}>
               <div className={styles.optionCard} onClick={handleMessage3}>
-                <div>Hi, what is the temperature</div>
+                <div>Hi, what is the temperature?</div>
                 <p>Get immediate AI generated response</p>
               </div>
               <div className={styles.optionCard} onClick={handleMessage4}>
-                <div>Hi, how are you</div>
+                <div>Hi, how are you?</div>
                 <p>Get immediate AI generated response</p>
               </div>
             </div>
@@ -120,15 +120,15 @@ export default function Home() {
             isMobile && 
             <div className={styles.mobileOptionView}>
               <div className={styles.optionCard} onClick={handleMessage1}>
-                <div>Hi, what is the weather</div>
+                <div>Hi, what is the weather?</div>
                 <p>Get immediate AI generated response</p>
               </div>
               <div className={styles.optionCard} onClick={handleMessage2}>
-                <div>Hi, what is my location</div>
+                <div>Hi, what is my location?</div>
                 <p>Get immediate AI generated response</p>
               </div>
               <div className={styles.optionCard} onClick={handleMessage4}>
-                <div>Hi, how are you</div>
+                <div>Hi, how are you?</div>
                 <p>Get immediate AI generated response</p>
               </div>
             </div>
