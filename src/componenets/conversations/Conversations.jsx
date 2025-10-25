@@ -25,6 +25,14 @@ export default function Conversations() {
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
+//   useEffect(() => {
+//   const savedInputs = localStorage.getItem("inputs");
+//   if (savedInputs) {
+//     JSON.parse(savedInputs).forEach((msg) => addInputs(msg));
+//   }
+// }, []); 
+
+
   useEffect(() => {
     if (prefilledMessage) {
       setInputBox(prefilledMessage);
@@ -47,7 +55,6 @@ export default function Conversations() {
     minute: "2-digit",
   });
 
-  // Add user message
   addInputs({ sender: "You", text: inputBox, time });
 
   const userText = inputBox.toLowerCase().trim();
@@ -66,7 +73,6 @@ export default function Conversations() {
     minute: "2-digit",
   });
 
-  // Directly add reply (no typing animation)
   addInputs({ sender: "Soul AI", text: replyText, time: replyTime });
 };
 
