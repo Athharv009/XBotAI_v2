@@ -28,13 +28,9 @@ export default function Conversations() {
   useEffect(() => {
   const savedInputs = localStorage.getItem("inputs");
   if (savedInputs) {
-    const parsed = JSON.parse(savedInputs);
-    if (parsed.length > 0 && inputs.length === 0) {
-      parsed.forEach((msg) => addInputs(msg));
-    }
+    JSON.parse(savedInputs).forEach((msg) => addInputs(msg));
   }
-}, []);
-
+}, []); 
 
 
   useEffect(() => {
