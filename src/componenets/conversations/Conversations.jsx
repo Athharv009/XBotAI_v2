@@ -10,83 +10,95 @@ export default function Conversations() {
   const [inputBox, setInputBox] = useState("");
   const [toggler, setToggler] = useState(false);
   const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
+  const [typingMessage, setTypingMessage] = useState("");
   const [showModal, setShowModal] = useState(false);
   const [feedback, setFeedback] = useState("");
-
   const navigate = useNavigate();
-  const { inputs, addInputs, clearInputs } = useContext(AppContext);
+
+  const { inputs, addInputs } = useContext(AppContext);
   const location = useLocation();
   const prefilledMessage = location.state?.message || "";
 
-  // ✅ Responsive view
   useEffect(() => {
     const handleResize = () => setIsMobile(window.innerWidth <= 768);
     window.addEventListener("resize", handleResize);
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
-  // ✅ Instant message submission for prefilled queries (no timeout)
   useEffect(() => {
     if (prefilledMessage) {
       setInputBox(prefilledMessage);
-      document
-        .querySelector("form")
-        ?.dispatchEvent(new Event("submit", { cancelable: true, bubbles: true }));
+      setTimeout(() => {
+        document
+          .querySelector("form")
+          ?.dispatchEvent(
+            new Event("submit", { cancelable: true, bubbles: true })
+          );
+      }, 400);
     }
   }, [prefilledMessage]);
 
-  // ✅ Handle Ask button submit
   const handleAskBtn = (e) => {
-    e.preventDefault();
-    if (!inputBox.trim()) return;
+  e.preventDefault();
+  if (!inputBox.trim()) return;
 
-    const time = new Date().toLocaleTimeString([], {
-      hour: "2-digit",
-      minute: "2-digit",
-    });
+  const time = new Date().toLocaleTimeString([], {
+    hour: "2-digit",
+    minute: "2-digit",
+  });
 
-    // Add user message
-    addInputs({ sender: "You", text: inputBox.trim(), time });
+  // Add user message
+  addInputs({ sender: "You", text: inputBox, time });
 
-    const userText = inputBox.toLowerCase().trim();
-    setInputBox("");
+  const userText = inputBox.toLowerCase().trim();
+  setInputBox("");
 
-    // Match response from sampleData
-    const matched = sampleData.find(
-      (item) => item.question.toLowerCase() === userText
-    );
+  const matched = sampleData.find(
+    (item) => item.question.toLowerCase() === userText
+  );
 
-    const replyText = matched
-      ? matched.response
-      : "Sorry, Did not understand your query!";
+  const replyText = matched
+    ? matched.response
+    : "Sorry, Did not understand your query!";
 
-    const replyTime = new Date().toLocaleTimeString([], {
-      hour: "2-digit",
-      minute: "2-digit",
-    });
+  const replyTime = new Date().toLocaleTimeString([], {
+    hour: "2-digit",
+    minute: "2-digit",
+  });
 
-    // Add reply instantly
-    addInputs({ sender: "Soul AI", text: replyText, time: replyTime });
+  // Directly add reply (no typing animation)
+  addInputs({ sender: "Soul AI", text: replyText, time: replyTime });
+};
+
+
+  const handleSaveBtn = () => {
+    setShowModal(true);
   };
-
-  // ✅ Save chat + feedback
-  const handleSaveBtn = () => setShowModal(true);
 
   const handleFeedbackSubmit = () => {
     const today = new Date().toISOString().split("T")[0];
+    const savedChats = JSON.parse(localStorage.getItem("chatMessages")) || {};
     const feedbacks = JSON.parse(localStorage.getItem("feedbacks")) || [];
 
-    // Save feedback separately
-    feedbacks.push({ date: today, feedback });
+    const newKey = `chat_${today}_${Date.now()}`;
+    const todayChats = Object.fromEntries(
+      Object.entries(savedChats).filter(([key]) => key.includes(today))
+    );
+
+    todayChats[newKey] = inputs;
+
+    localStorage.setItem("chatMessages", JSON.stringify(todayChats));
+    feedbacks.push({ chatId: newKey, date: today, feedback });
     localStorage.setItem("feedbacks", JSON.stringify(feedbacks));
 
-    // Reset after save
     setShowModal(false);
     setFeedback("");
-    clearInputs();
+    addInputs([]);
     alert("Chat and feedback saved successfully!");
     navigate("/");
-    setTimeout(() => window.location.reload(), 300);
+    setTimeout(() => {
+      window.location.reload();
+    }, 300);
   };
 
   return (
@@ -139,11 +151,15 @@ export default function Conversations() {
               <div>
                 <div className={cstyles.textContent}>
                   <span className={cstyles.user}>{msg.sender}</span>
-                  <p>{msg.text}</p>
+                  {msg.sender === "Soul AI" ? (
+                    <p>{msg.text}</p>
+                  ) : (
+                    <p>{msg.text}</p>
+                  )}
                 </div>
                 <div className={cstyles.time}>
                   <small>{msg.time}</small>
-                  {msg.sender === "Soul AI" && (
+                  {msg.sender === "Soul AI" ? (
                     <div
                       style={{
                         display: "flex",
@@ -158,16 +174,34 @@ export default function Conversations() {
                       />
                       <img
                         src={require("../../assets/like.png")}
-                        alt="Dislike"
+                        alt="DisLike"
                         style={{ transform: "rotate(180deg)" }}
                         className={cstyles.like}
                       />
                     </div>
-                  )}
+                  ) : null}
                 </div>
               </div>
             </div>
           ))}
+
+          {typingMessage && (
+            <div className={cstyles.chatCardContainer}>
+              <div className={cstyles.imgUser}>
+                <img
+                  src={require("../../assets/logo.png")}
+                  alt="Soul AI"
+                  className={cstyles.avatar}
+                />
+              </div>
+              <div>
+                <div className={cstyles.textContent}>
+                  <span className={cstyles.user}>Soul AI</span>
+                  <p>{typingMessage}</p>
+                </div>
+              </div>
+            </div>
+          )}
 
           <div className={styles.chatBoxComponenet}>
             <form className={styles.chatboxSection} onSubmit={handleAskBtn}>
