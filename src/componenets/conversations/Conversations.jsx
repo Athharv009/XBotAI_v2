@@ -25,12 +25,12 @@ export default function Conversations() {
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
-//   useEffect(() => {
-//   const savedInputs = localStorage.getItem("inputs");
-//   if (savedInputs) {
-//     JSON.parse(savedInputs).forEach((msg) => addInputs(msg));
-//   }
-// }, []); 
+  useEffect(() => {
+  const savedInputs = localStorage.getItem("inputs");
+  if (savedInputs) {
+    JSON.parse(savedInputs).forEach((msg) => addInputs(msg));
+  }
+}, []); 
 
 
   useEffect(() => {

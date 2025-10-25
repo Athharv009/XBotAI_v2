@@ -79,7 +79,7 @@ export default function Home() {
                 ☰
               </button>
             )}
-            <header className={styles.bot_h1}><h1>Bot AI</h1></header>
+            <header><h1 className={styles.bot_h1}>Bot AI</h1></header>
           </div>
         )}
 
@@ -96,21 +96,21 @@ export default function Home() {
           <div className={styles.mainGroupOption}>
             <div className={styles.groupOption}>
               <div className={styles.optionCard} onClick={handleMessage1}>
-                <div>Hi, what is the weather?</div>
+                <h3>Hi, what is the weather</h3>
                 <p>Get immediate AI generated response</p>
               </div>
               <div className={styles.optionCard} onClick={handleMessage2}>
-                <div>Hi, what is my location?</div>
+                <h3>Hi, what is my location</h3>
                 <p>Get immediate AI generated response</p>
               </div>
             </div>
             <div className={styles.groupOption}>
               <div className={styles.optionCard} onClick={handleMessage3}>
-                <div>Hi, what is the temperature?</div>
+                <h3>Hi, what is the temperature</h3>
                 <p>Get immediate AI generated response</p>
               </div>
               <div className={styles.optionCard} onClick={handleMessage4}>
-                <div>Hi, how are you?</div>
+                <h3>Hi, how are you</h3>
                 <p>Get immediate AI generated response</p>
               </div>
             </div>
@@ -120,15 +120,15 @@ export default function Home() {
             isMobile && 
             <div className={styles.mobileOptionView}>
               <div className={styles.optionCard} onClick={handleMessage1}>
-                <div>Hi, what is the weather?</div>
+                <h3>Hi, what is the weather</h3>
                 <p>Get immediate AI generated response</p>
               </div>
               <div className={styles.optionCard} onClick={handleMessage2}>
-                <div>Hi, what is my location?</div>
+                <h3>Hi, what is my location</h3>
                 <p>Get immediate AI generated response</p>
               </div>
               <div className={styles.optionCard} onClick={handleMessage4}>
-                <div>Hi, how are you?</div>
+                <h3>Hi, how are you</h3>
                 <p>Get immediate AI generated response</p>
               </div>
             </div>
