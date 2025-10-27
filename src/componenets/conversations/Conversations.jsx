@@ -42,7 +42,7 @@ export default function Conversations() {
           ?.dispatchEvent(
             new Event("submit", { cancelable: true, bubbles: true })
           );
-      }, 400);
+      });
     }
   }, [prefilledMessage]);
 

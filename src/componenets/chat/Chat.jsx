@@ -16,12 +16,17 @@ export default function Chat() {
         </Link>
 
         <div className={styles.mainChatTextEdit}>
-          <h2 className={styles.chatText}>New Chat</h2>
+          
+          <a href="/" style={{ textDecoration: "none" }} className={styles.mainChatTextEdit}>
+            <h2 className={styles.chatText}>New Chat</h2>
           <img
             src={require("../../assets/edit.png")}
             alt="Logo"
             className={styles.chatEdit}
           />
+          </a>
+          
+          
         </div>
       </div>
       <div className={styles.pastConversationContainer}>
