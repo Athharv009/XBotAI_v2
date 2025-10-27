@@ -295,7 +295,7 @@ color: #000000;
     margin-top: 0px;
     font-size: 26px;
   }
-  .optionCard h3, p {
+  .optionCard div, p {
     width: 100%;
     margin-left: 0px;
   }
