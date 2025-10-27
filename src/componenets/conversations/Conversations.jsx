@@ -153,7 +153,7 @@ export default function Conversations() {
               <div>
                 <div className={cstyles.textContent}>
                   <span className={cstyles.user}>{msg.sender}</span>
-                  <p>{msg.text}</p>
+                  <div>{msg.text}</div>
                 </div>
                 <div className={cstyles.time}>
                   <small>{msg.time}</small>
