@@ -26,14 +26,6 @@ export default function Conversations() {
   }, []);
 
   useEffect(() => {
-  const savedInputs = localStorage.getItem("inputs");
-  if (savedInputs) {
-    JSON.parse(savedInputs).forEach((msg) => addInputs(msg));
-  }
-}, []); 
-
-
-  useEffect(() => {
     if (prefilledMessage) {
       setInputBox(prefilledMessage);
       setTimeout(() => {
@@ -42,7 +34,7 @@ export default function Conversations() {
           ?.dispatchEvent(
             new Event("submit", { cancelable: true, bubbles: true })
           );
-      }, 1000);
+      }, 800);
     }
   }, [prefilledMessage]);
 
