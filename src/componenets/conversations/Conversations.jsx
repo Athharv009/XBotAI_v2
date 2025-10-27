@@ -71,6 +71,12 @@ export default function Conversations() {
     });
 
     addInputs({ sender: "Soul AI", text: replyText, time: replyTime });
+
+// Small delay to ensure localStorage writes complete
+setTimeout(() => {
+  localStorage.setItem("inputs", JSON.stringify(inputs));
+}, 300);
+
   };
 
   // ✅ Handle feedback save
