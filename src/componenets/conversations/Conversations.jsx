@@ -19,12 +19,16 @@ export default function Conversations() {
   const location = useLocation();
   const prefilledMessage = location.state?.message || "";
 
+  // ✅ Handle responsive layout
   useEffect(() => {
     const handleResize = () => setIsMobile(window.innerWidth <= 768);
     window.addEventListener("resize", handleResize);
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
+  // ✅ Remove duplicated localStorage re-load (AppContext already does this)
+
+  // ✅ Auto-send prefilled message (from Home)
   useEffect(() => {
     if (prefilledMessage) {
       setInputBox(prefilledMessage);
@@ -38,37 +42,38 @@ export default function Conversations() {
     }
   }, [prefilledMessage]);
 
+  // ✅ Handle sending message
   const handleAskBtn = (e) => {
-  e.preventDefault();
-  if (!inputBox.trim()) return;
+    e.preventDefault();
+    if (!inputBox.trim()) return;
 
-  const time = new Date().toLocaleTimeString([], {
-    hour: "2-digit",
-    minute: "2-digit",
-  });
+    const time = new Date().toLocaleTimeString([], {
+      hour: "2-digit",
+      minute: "2-digit",
+    });
 
-  addInputs({ sender: "You", text: inputBox, time });
+    addInputs({ sender: "You", text: inputBox, time });
 
-  const userText = inputBox.toLowerCase().trim();
-  setInputBox("");
+    const userText = inputBox.toLowerCase().trim();
+    setInputBox("");
 
-  const matched = sampleData.find(
-    (item) => item.question.toLowerCase() === userText
-  );
+    const matched = sampleData.find(
+      (item) => item.question.toLowerCase() === userText
+    );
 
-  const replyText = matched
-    ? matched.response
-    : "Sorry, Did not understand your query!";
+    const replyText = matched
+      ? matched.response
+      : "Sorry, Did not understand your query!";
 
-  const replyTime = new Date().toLocaleTimeString([], {
-    hour: "2-digit",
-    minute: "2-digit",
-  });
+    const replyTime = new Date().toLocaleTimeString([], {
+      hour: "2-digit",
+      minute: "2-digit",
+    });
 
-  addInputs({ sender: "Soul AI", text: replyText, time: replyTime });
-};
+    addInputs({ sender: "Soul AI", text: replyText, time: replyTime });
+  };
 
-
+  // ✅ Handle feedback save
   const handleSaveBtn = () => {
     setShowModal(true);
   };
@@ -91,7 +96,6 @@ export default function Conversations() {
 
     setShowModal(false);
     setFeedback("");
-    addInputs([]);
     alert("Chat and feedback saved successfully!");
     navigate("/");
     setTimeout(() => {
@@ -149,15 +153,11 @@ export default function Conversations() {
               <div>
                 <div className={cstyles.textContent}>
                   <span className={cstyles.user}>{msg.sender}</span>
-                  {msg.sender === "Soul AI" ? (
-                    <p>{msg.text}</p>
-                  ) : (
-                    <p>{msg.text}</p>
-                  )}
+                  <p>{msg.text}</p>
                 </div>
                 <div className={cstyles.time}>
                   <small>{msg.time}</small>
-                  {msg.sender === "Soul AI" ? (
+                  {msg.sender === "Soul AI" && (
                     <div
                       style={{
                         display: "flex",
@@ -177,7 +177,7 @@ export default function Conversations() {
                         className={cstyles.like}
                       />
                     </div>
-                  ) : null}
+                  )}
                 </div>
               </div>
             </div>
