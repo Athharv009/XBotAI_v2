@@ -10,7 +10,6 @@ export default function Conversations() {
   const [inputBox, setInputBox] = useState("");
   const [toggler, setToggler] = useState(false);
   const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
-  const [typingMessage, setTypingMessage] = useState("");
   const [showModal, setShowModal] = useState(false);
   const [feedback, setFeedback] = useState("");
   const navigate = useNavigate();
@@ -26,8 +25,6 @@ export default function Conversations() {
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
-  // ✅ Remove duplicated localStorage re-load (AppContext already does this)
-
   // ✅ Auto-send prefilled message (from Home)
   useEffect(() => {
     if (prefilledMessage) {
@@ -41,6 +38,15 @@ export default function Conversations() {
       }, 800);
     }
   }, [prefilledMessage]);
+
+  // ✅ Restore chats if lost (for safety)
+  useEffect(() => {
+    const savedInputs = JSON.parse(localStorage.getItem("inputs")) || [];
+    if (savedInputs.length > 0 && inputs.length === 0) {
+      savedInputs.forEach((msg) => addInputs(msg));
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   // ✅ Handle sending message
   const handleAskBtn = (e) => {
@@ -71,12 +77,6 @@ export default function Conversations() {
     });
 
     addInputs({ sender: "Soul AI", text: replyText, time: replyTime });
-
-// Small delay to ensure localStorage writes complete
-setTimeout(() => {
-  localStorage.setItem("inputs", JSON.stringify(inputs));
-}, 300);
-
   };
 
   // ✅ Handle feedback save
@@ -188,24 +188,6 @@ setTimeout(() => {
               </div>
             </div>
           ))}
-
-          {typingMessage && (
-            <div className={cstyles.chatCardContainer}>
-              <div className={cstyles.imgUser}>
-                <img
-                  src={require("../../assets/logo.png")}
-                  alt="Soul AI"
-                  className={cstyles.avatar}
-                />
-              </div>
-              <div>
-                <div className={cstyles.textContent}>
-                  <span className={cstyles.user}>Soul AI</span>
-                  <p>{typingMessage}</p>
-                </div>
-              </div>
-            </div>
-          )}
 
           <div className={styles.chatBoxComponenet}>
             <form className={styles.chatboxSection} onSubmit={handleAskBtn}>
