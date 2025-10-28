@@ -25,6 +25,16 @@ export default function Conversations() {
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
+  // ✅ Restore chats from localStorage on mount (for persistence test)
+  useEffect(() => {
+    const savedInputs = JSON.parse(localStorage.getItem("inputs")) || [];
+    // restore only if inputs empty and saved exist
+    if (savedInputs.length > 0 && inputs.length === 0) {
+      savedInputs.forEach((msg) => addInputs(msg));
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   // ✅ Auto-send prefilled message (from Home)
   useEffect(() => {
     if (prefilledMessage) {
@@ -39,15 +49,6 @@ export default function Conversations() {
     }
   }, [prefilledMessage]);
 
-  // ✅ Restore chats if lost (for safety)
-  useEffect(() => {
-    const savedInputs = JSON.parse(localStorage.getItem("inputs")) || [];
-    if (savedInputs.length > 0 && inputs.length === 0) {
-      savedInputs.forEach((msg) => addInputs(msg));
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
   // ✅ Handle sending message
   const handleAskBtn = (e) => {
     e.preventDefault();
@@ -58,7 +59,8 @@ export default function Conversations() {
       minute: "2-digit",
     });
 
-    addInputs({ sender: "You", text: inputBox, time });
+    const userMsg = { sender: "You", text: inputBox, time };
+    addInputs(userMsg);
 
     const userText = inputBox.toLowerCase().trim();
     setInputBox("");
@@ -76,7 +78,12 @@ export default function Conversations() {
       minute: "2-digit",
     });
 
-    addInputs({ sender: "Soul AI", text: replyText, time: replyTime });
+    const botMsg = { sender: "Soul AI", text: replyText, time: replyTime };
+    addInputs(botMsg);
+
+    // ✅ Immediately persist to localStorage after every send
+    const current = JSON.parse(localStorage.getItem("inputs")) || [];
+    localStorage.setItem("inputs", JSON.stringify([...current, userMsg, botMsg]));
   };
 
   // ✅ Handle feedback save
