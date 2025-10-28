@@ -3,10 +3,11 @@ import { useContext } from "react";
 import styles from "../home/Home.module.css";
 import { AppContext } from "../../AppContext";
 
-export default function ChatBoxComponent({ setInputBox, handleAskBtn }) {
-  const { inputs, clearInputs } = useContext(AppContext);
+export default function ChatBoxComponent({ setInputBox }) {
+  const { inputs, addInputs, clearInputs } = useContext(AppContext);
   const navigate = useNavigate();
 
+  // ✅ Save today's conversation to localStorage
   const handleSaveBtn = () => {
     if (inputs.length === 0) {
       alert("No conversation to save!");
@@ -30,11 +31,22 @@ export default function ChatBoxComponent({ setInputBox, handleAskBtn }) {
     setInputBox("");
   };
 
+  // ✅ Handle Ask (save + navigate)
   const handleAskBtnLocal = (e) => {
     e.preventDefault();
-    const message = e.target.querySelector("input").value.trim();
+    const inputEl = e.target.querySelector("input");
+    const message = inputEl.value.trim();
     if (!message) return;
+
+    // 🧠 Save message in AppContext and localStorage before navigation
+    addInputs(message);
+    const updated = [...inputs, message];
+    localStorage.setItem("inputs", JSON.stringify(updated));
+
+    // Navigate to Conversations page
     navigate("/conversations", { state: { message } });
+    setInputBox("");
+    inputEl.value = "";
   };
 
   return (
@@ -43,17 +55,13 @@ export default function ChatBoxComponent({ setInputBox, handleAskBtn }) {
         <input
           className={styles.inputBox}
           type="text"
-          placeholder='Message Bot AI...'
+          placeholder="Message Bot AI..."
           onChange={(e) => setInputBox(e.target.value)}
         />
         <button type="submit" className={styles.btn}>
           Ask
         </button>
-        <button
-          type="button"
-          className={styles.btn}
-          onClick={handleSaveBtn}
-        >
+        <button type="button" className={styles.btn} onClick={handleSaveBtn}>
           Save
         </button>
       </form>
