@@ -15,15 +15,24 @@ export default function Conversations() {
   const navigate = useNavigate();
 
   const { inputs, addInputs } = useContext(AppContext);
+  const location = useLocation();
+  const prefilledMessage = location.state?.message || "";
 
-  // ✅ Read saved chats immediately (before render)
+  // ✅ Load saved messages from localStorage on mount (before React re-render)
   const [localInputs, setLocalInputs] = useState(() => {
     const saved = localStorage.getItem("inputs");
     return saved ? JSON.parse(saved) : [];
   });
 
-  const location = useLocation();
-  const prefilledMessage = location.state?.message || "";
+  // ✅ Keep context and local copy synced
+  useEffect(() => {
+    if (inputs.length > 0) {
+      setLocalInputs(inputs);
+    } else {
+      const saved = localStorage.getItem("inputs");
+      if (saved) setLocalInputs(JSON.parse(saved));
+    }
+  }, [inputs]);
 
   // ✅ Handle responsive layout
   useEffect(() => {
@@ -46,14 +55,6 @@ export default function Conversations() {
     }
   }, [prefilledMessage]);
 
-  // ✅ Sync local state to AppContext on mount
-  useEffect(() => {
-    if (localInputs.length > 0 && inputs.length === 0) {
-      localInputs.forEach((msg) => addInputs(msg));
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
   // ✅ Handle sending message
   const handleAskBtn = (e) => {
     e.preventDefault();
@@ -64,10 +65,16 @@ export default function Conversations() {
       minute: "2-digit",
     });
 
-    const userMsg = { sender: "You", text: inputBox, time };
+    // Add user message
+    addInputs({ sender: "You", text: inputBox, time });
+    const newInputs = [...localInputs, { sender: "You", text: inputBox, time }];
+    setLocalInputs(newInputs);
+    localStorage.setItem("inputs", JSON.stringify(newInputs));
+
     const userText = inputBox.toLowerCase().trim();
     setInputBox("");
 
+    // Find reply from sampleData
     const matched = sampleData.find(
       (item) => item.question.toLowerCase() === userText
     );
@@ -81,14 +88,11 @@ export default function Conversations() {
       minute: "2-digit",
     });
 
-    const botMsg = { sender: "Soul AI", text: replyText, time: replyTime };
-
-    // ✅ Add and persist immediately
-    const updated = [...localInputs, userMsg, botMsg];
+    const reply = { sender: "Soul AI", text: replyText, time: replyTime };
+    addInputs(reply);
+    const updated = [...newInputs, reply];
     setLocalInputs(updated);
     localStorage.setItem("inputs", JSON.stringify(updated));
-    addInputs(userMsg);
-    addInputs(botMsg);
   };
 
   // ✅ Handle feedback save
@@ -155,7 +159,7 @@ export default function Conversations() {
         )}
 
         <div className={cstyles.chatBoxMainContainer}>
-          {(inputs.length > 0 ? inputs : localInputs).map((msg, i) => (
+          {localInputs.map((msg, i) => (
             <div className={cstyles.chatCardContainer} key={i}>
               <div className={cstyles.imgUser}>
                 <img
@@ -175,27 +179,6 @@ export default function Conversations() {
                 </div>
                 <div className={cstyles.time}>
                   <small>{msg.time}</small>
-                  {msg.sender === "Soul AI" && (
-                    <div
-                      style={{
-                        display: "flex",
-                        alignItems: "center",
-                        gap: "10px",
-                      }}
-                    >
-                      <img
-                        src={require("../../assets/like.png")}
-                        alt="Like"
-                        className={cstyles.like}
-                      />
-                      <img
-                        src={require("../../assets/like.png")}
-                        alt="DisLike"
-                        style={{ transform: "rotate(180deg)" }}
-                        className={cstyles.like}
-                      />
-                    </div>
-                  )}
                 </div>
               </div>
             </div>
