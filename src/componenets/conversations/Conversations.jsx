@@ -15,6 +15,13 @@ export default function Conversations() {
   const navigate = useNavigate();
 
   const { inputs, addInputs } = useContext(AppContext);
+
+  // ✅ Read saved chats immediately (before render)
+  const [localInputs, setLocalInputs] = useState(() => {
+    const saved = localStorage.getItem("inputs");
+    return saved ? JSON.parse(saved) : [];
+  });
+
   const location = useLocation();
   const prefilledMessage = location.state?.message || "";
 
@@ -23,16 +30,6 @@ export default function Conversations() {
     const handleResize = () => setIsMobile(window.innerWidth <= 768);
     window.addEventListener("resize", handleResize);
     return () => window.removeEventListener("resize", handleResize);
-  }, []);
-
-  // ✅ Restore chats from localStorage on mount (for persistence test)
-  useEffect(() => {
-    const savedInputs = JSON.parse(localStorage.getItem("inputs")) || [];
-    // restore only if inputs empty and saved exist
-    if (savedInputs.length > 0 && inputs.length === 0) {
-      savedInputs.forEach((msg) => addInputs(msg));
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   // ✅ Auto-send prefilled message (from Home)
@@ -49,6 +46,14 @@ export default function Conversations() {
     }
   }, [prefilledMessage]);
 
+  // ✅ Sync local state to AppContext on mount
+  useEffect(() => {
+    if (localInputs.length > 0 && inputs.length === 0) {
+      localInputs.forEach((msg) => addInputs(msg));
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   // ✅ Handle sending message
   const handleAskBtn = (e) => {
     e.preventDefault();
@@ -60,8 +65,6 @@ export default function Conversations() {
     });
 
     const userMsg = { sender: "You", text: inputBox, time };
-    addInputs(userMsg);
-
     const userText = inputBox.toLowerCase().trim();
     setInputBox("");
 
@@ -79,11 +82,13 @@ export default function Conversations() {
     });
 
     const botMsg = { sender: "Soul AI", text: replyText, time: replyTime };
-    addInputs(botMsg);
 
-    // ✅ Immediately persist to localStorage after every send
-    const current = JSON.parse(localStorage.getItem("inputs")) || [];
-    localStorage.setItem("inputs", JSON.stringify([...current, userMsg, botMsg]));
+    // ✅ Add and persist immediately
+    const updated = [...localInputs, userMsg, botMsg];
+    setLocalInputs(updated);
+    localStorage.setItem("inputs", JSON.stringify(updated));
+    addInputs(userMsg);
+    addInputs(botMsg);
   };
 
   // ✅ Handle feedback save
@@ -101,7 +106,7 @@ export default function Conversations() {
       Object.entries(savedChats).filter(([key]) => key.includes(today))
     );
 
-    todayChats[newKey] = inputs;
+    todayChats[newKey] = localInputs;
 
     localStorage.setItem("chatMessages", JSON.stringify(todayChats));
     feedbacks.push({ chatId: newKey, date: today, feedback });
@@ -150,7 +155,7 @@ export default function Conversations() {
         )}
 
         <div className={cstyles.chatBoxMainContainer}>
-          {inputs.map((msg, i) => (
+          {(inputs.length > 0 ? inputs : localInputs).map((msg, i) => (
             <div className={cstyles.chatCardContainer} key={i}>
               <div className={cstyles.imgUser}>
                 <img
