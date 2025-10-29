@@ -24,15 +24,15 @@ export default function PastConversation() {
   }, []);
 
   useEffect(() => {
-  // ✅ Auto-include unsaved inputs for persistence
-  const liveInputs = JSON.parse(localStorage.getItem("inputs")) || [];
-  if (liveInputs.length > 0) {
-    setSavedChats((prev) => ({
-      ...prev,
-      temp_auto_saved_chat: liveInputs,
-    }));
-  }
-}, []);
+    // ✅ Auto-include unsaved inputs for persistence
+    const liveInputs = JSON.parse(localStorage.getItem("inputs")) || [];
+    if (liveInputs.length > 0) {
+      setSavedChats((prev) => ({
+        ...prev,
+        temp_auto_saved_chat: liveInputs,
+      }));
+    }
+  }, []);
 
   const getFeedbackForDate = (dateString) => {
     const fb = feedbacks.find((f) => f.date === dateString);
@@ -60,10 +60,7 @@ export default function PastConversation() {
       <div className={hstyles.content}>
         <div className={hstyles.mobileViewToggler}>
           {isMobile && (
-            <button
-              className={styles.menuBtn}
-              onClick={() => setToggler(true)}
-            >
+            <button className={styles.menuBtn} onClick={() => setToggler(true)}>
               ☰
             </button>
           )}
@@ -80,11 +77,20 @@ export default function PastConversation() {
               .sort((a, b) => b[0].localeCompare(a[0]))
               .map(([chatId, chatData]) => {
                 const parts = chatId.split("_");
-                const timestamp = parts[parts.length - 1]; // last part as timestamp
-                const readableDate = new Date(Number(timestamp)).toLocaleString();
-                const dateOnly = new Date(Number(timestamp))
-                  .toISOString()
-                  .split("T")[0];
+                const timestamp = parts[parts.length - 1];
+
+                // ✅ Safe date parsing to prevent "Invalid time value"
+                let readableDate = "Unknown Date";
+                let dateOnly = "";
+                const parsedTimestamp = Number(timestamp);
+                if (!isNaN(parsedTimestamp) && parsedTimestamp > 0) {
+                  const dateObj = new Date(parsedTimestamp);
+                  if (!isNaN(dateObj.getTime())) {
+                    readableDate = dateObj.toLocaleString();
+                    dateOnly = dateObj.toISOString().split("T")[0];
+                  }
+                }
+
                 const feedbackText = getFeedbackForDate(dateOnly);
 
                 return (
