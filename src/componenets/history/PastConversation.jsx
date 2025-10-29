@@ -23,6 +23,17 @@ export default function PastConversation() {
     setFeedbacks(feedbackData);
   }, []);
 
+  useEffect(() => {
+  // ✅ Auto-include unsaved inputs for persistence
+  const liveInputs = JSON.parse(localStorage.getItem("inputs")) || [];
+  if (liveInputs.length > 0) {
+    setSavedChats((prev) => ({
+      ...prev,
+      temp_auto_saved_chat: liveInputs,
+    }));
+  }
+}, []);
+
   const getFeedbackForDate = (dateString) => {
     const fb = feedbacks.find((f) => f.date === dateString);
     return fb ? fb.feedback : null;
