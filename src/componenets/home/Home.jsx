@@ -34,21 +34,21 @@ export default function Home() {
   };
 
   const handleMessage1 = () => {
-  const message = "Hi, what is the weather?";
-  navigate("/conversations", { state: { message } });
-};
+    const message = "Hi, what is the weather?";
+    navigate("/conversations", { state: { message } });
+  };
   const handleMessage2 = () => {
-  const message = "Hi, what is my location?";
-  navigate("/conversations", { state: { message } });
-};
+    const message = "Hi, what is my location?";
+    navigate("/conversations", { state: { message } });
+  };
   const handleMessage3 = () => {
-  const message = "Hi, what is the temperature?";
-  navigate("/conversations", { state: { message } });
-};
+    const message = "Hi, what is the temperature?";
+    navigate("/conversations", { state: { message } });
+  };
   const handleMessage4 = () => {
-  const message = "Hi, how are you?";
-  navigate("/conversations", { state: { message } });
-};
+    const message = "Hi, how are you?";
+    navigate("/conversations", { state: { message } });
+  };
 
   return (
     <div className={styles.home}>
@@ -79,7 +79,9 @@ export default function Home() {
                 ☰
               </button>
             )}
-            <header><h1 className={styles.bot_h1}>Bot AI</h1></header>
+            <header>
+              <h1 className={styles.bot_h1}>Bot AI</h1>
+            </header>
           </div>
         )}
 
@@ -116,8 +118,7 @@ export default function Home() {
             </div>
           </div>
 
-          {
-            isMobile && 
+          {isMobile && (
             <div className={styles.mobileOptionView}>
               <div className={styles.optionCard} onClick={handleMessage1}>
                 <h3>Hi, what is the weather</h3>
@@ -132,9 +133,12 @@ export default function Home() {
                 <p>Get immediate AI generated response</p>
               </div>
             </div>
-          }
+          )}
 
-          <ChatBoxComponent setInputBox={setInputBox} handleAskBtn={handleAskBtn}/>
+          <ChatBoxComponent
+            setInputBox={setInputBox}
+            handleAskBtn={handleAskBtn}
+          />
         </div>
       </div>
     </div>
