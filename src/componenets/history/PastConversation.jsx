@@ -10,14 +10,12 @@ export default function PastConversation() {
   const [savedChats, setSavedChats] = useState({});
   const [feedbacks, setFeedbacks] = useState([]);
 
-  // Handle screen resize
   useEffect(() => {
     const handleResize = () => setIsMobile(window.innerWidth <= 768);
     window.addEventListener("resize", handleResize);
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
-  // Load chats & feedbacks from localStorage
   useEffect(() => {
     const chats = JSON.parse(localStorage.getItem("chatMessages")) || {};
     const feedbackData = JSON.parse(localStorage.getItem("feedbacks")) || [];
@@ -25,7 +23,6 @@ export default function PastConversation() {
     setFeedbacks(feedbackData);
   }, []);
 
-  // Helper: Get feedback for a date
   const getFeedbackForDate = (dateString) => {
     const fb = feedbacks.find((f) => f.date === dateString);
     return fb ? fb.feedback : null;
@@ -33,7 +30,6 @@ export default function PastConversation() {
 
   return (
     <div className={styles.home}>
-      {/* Sidebar Chat Section */}
       <div
         className={`${styles.chatSection} ${
           isMobile && toggler ? styles.drawerOpen : ""
@@ -50,7 +46,6 @@ export default function PastConversation() {
         <Chat />
       </div>
 
-      {/* Main Content */}
       <div className={hstyles.content}>
         <div className={hstyles.mobileViewToggler}>
           {isMobile && (
@@ -64,7 +59,6 @@ export default function PastConversation() {
           <h1 className={hstyles.heading}>Conversation History</h1>
         </div>
 
-        {/* Render saved conversations */}
         <div>
           {Object.keys(savedChats).length === 0 ? (
             <p style={{ textAlign: "center", marginTop: "30px" }}>
@@ -161,7 +155,6 @@ export default function PastConversation() {
                       )}
                     </div>
 
-                    {/* Feedback Section */}
                     {feedbackText && (
                       <div className={hstyles.feedbackSection}>
                         <h3>Feedback:</h3>

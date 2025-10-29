@@ -7,7 +7,6 @@ export default function ChatBoxComponent({ setInputBox }) {
   const { inputs, addInputs, clearInputs } = useContext(AppContext);
   const navigate = useNavigate();
 
-  // ✅ Save today's conversation to localStorage
   const handleSaveBtn = () => {
     if (inputs.length === 0) {
       alert("No conversation to save!");
@@ -31,19 +30,16 @@ export default function ChatBoxComponent({ setInputBox }) {
     setInputBox("");
   };
 
-  // ✅ Handle Ask (save + navigate)
   const handleAskBtnLocal = (e) => {
     e.preventDefault();
     const inputEl = e.target.querySelector("input");
     const message = inputEl.value.trim();
     if (!message) return;
 
-    // 🧠 Save message in AppContext and localStorage before navigation
     addInputs(message);
     const updated = [...inputs, message];
     localStorage.setItem("inputs", JSON.stringify(updated));
 
-    // Navigate to Conversations page
     navigate("/conversations", { state: { message } });
     setInputBox("");
     inputEl.value = "";
