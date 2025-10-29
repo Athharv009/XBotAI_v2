@@ -8,28 +8,32 @@ export function AppProvider({ children }) {
       const savedInputs = JSON.parse(localStorage.getItem("inputs"));
       if (Array.isArray(savedInputs)) {
         return savedInputs.map((msg) => ({
-          sender: msg.sender || "You",
-          text: msg.text || "",
+          sender: msg?.sender || "You",
+          text: msg?.text || "",
+          // ✅ ensures valid time string even if old data is corrupted
           time:
-            msg.time ||
-            new Date().toLocaleTimeString([], {
-              hour: "2-digit",
-              minute: "2-digit",
-            }),
+            typeof msg?.time === "string" && msg.time.trim() !== ""
+              ? msg.time
+              : new Date().toLocaleTimeString([], {
+                  hour: "2-digit",
+                  minute: "2-digit",
+                }),
         }));
       }
-    } catch (err) {
-      console.error("Error reading localStorage:", err);
+    } catch (e) {
+      console.warn("Error parsing inputs from localStorage:", e);
     }
     return [];
   });
 
   const [debounceTimeout, setDebounceTimeout] = useState(null);
 
+  // ✅ keep localStorage updated
   useEffect(() => {
     localStorage.setItem("inputs", JSON.stringify(inputs));
   }, [inputs]);
 
+  // ✅ safely add user or bot messages
   const addInputs = (msg) => {
     const messageObj =
       typeof msg === "string"
@@ -42,13 +46,15 @@ export function AppProvider({ children }) {
             }),
           }
         : {
-            ...msg,
+            sender: msg?.sender || "You",
+            text: msg?.text || "",
             time:
-              msg.time ||
-              new Date().toLocaleTimeString([], {
-                hour: "2-digit",
-                minute: "2-digit",
-              }),
+              typeof msg?.time === "string" && msg.time.trim() !== ""
+                ? msg.time
+                : new Date().toLocaleTimeString([], {
+                    hour: "2-digit",
+                    minute: "2-digit",
+                  }),
           };
 
     setInputs((prev) => [...prev, messageObj]);
