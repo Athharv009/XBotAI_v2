@@ -3,13 +3,12 @@ import { createContext, useState, useEffect } from "react";
 export const AppContext = createContext();
 
 export function AppProvider({ children }) {
-  const [inputs, setInputs] = useState([]);
-  const [debounceTimeout, setDebounceTimeout] = useState(null);
+  const [inputs, setInputs] = useState(() => {
+    const savedInputs = JSON.parse(localStorage.getItem("inputs"));
+    return savedInputs || [];
+  });
 
-  useEffect(() => {
-    const savedInputs = JSON.parse(localStorage.getItem("inputs")) || [];
-    setInputs(savedInputs);
-  }, []);
+  const [debounceTimeout, setDebounceTimeout] = useState(null);
 
   useEffect(() => {
     localStorage.setItem("inputs", JSON.stringify(inputs));
@@ -42,7 +41,7 @@ export function AppProvider({ children }) {
         addInputs,
         clearInputs,
         debounceTimeout,
-        setDebounceTimeout, 
+        setDebounceTimeout,
       }}
     >
       {children}

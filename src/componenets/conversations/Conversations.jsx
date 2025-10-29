@@ -17,9 +17,24 @@ export default function Conversations() {
   const location = useLocation();
   const prefilledMessage = location.state?.message || "";
 
+  // ✅ FIXED SECTION: Handle prefilled message properly
   useEffect(() => {
     if (!prefilledMessage) return;
 
+    const time = new Date().toLocaleTimeString([], {
+      hour: "2-digit",
+      minute: "2-digit",
+    });
+
+    // 1️⃣ Add the user's message first (avoid duplicates)
+    const hasUserMessage = inputs.some(
+      (m) => m.sender === "You" && m.text === prefilledMessage
+    );
+    if (!hasUserMessage) {
+      addInputs({ sender: "You", text: prefilledMessage, time });
+    }
+
+    // 2️⃣ Find matching AI response
     const userText = prefilledMessage.toLowerCase().trim();
     const matched = sampleData.find(
       (item) => item.question.toLowerCase() === userText
@@ -28,21 +43,21 @@ export default function Conversations() {
       ? matched.response
       : "Sorry, Did not understand your query!";
 
+    // 3️⃣ Add AI reply (avoid duplicate replies)
     const alreadyHasReply = inputs.some(
       (m) => m.sender === "Soul AI" && m.text === replyText
     );
     if (alreadyHasReply) return;
 
     const timer = setTimeout(() => {
-      const reply = {
+      addInputs({
         sender: "Soul AI",
         text: replyText,
         time: new Date().toLocaleTimeString([], {
           hour: "2-digit",
           minute: "2-digit",
         }),
-      };
-      addInputs(reply);
+      });
     }, 600);
 
     return () => clearTimeout(timer);
