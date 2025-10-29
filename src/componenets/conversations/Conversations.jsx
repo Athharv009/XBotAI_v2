@@ -12,69 +12,31 @@ export default function Conversations() {
   const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
   const [showModal, setShowModal] = useState(false);
   const [feedback, setFeedback] = useState("");
-  const [isReady, setIsReady] = useState(false); // ✅ Added state
   const navigate = useNavigate();
   const { inputs, addInputs } = useContext(AppContext);
   const location = useLocation();
   const prefilledMessage = location.state?.message || "";
 
-  // ✅ Wait for context to restore inputs before rendering
+  // ✅ auto-submit if message passed from Home
   useEffect(() => {
-    if (inputs) setIsReady(true);
-  }, [inputs]);
-
-  // ✅ FIXED SECTION: Handle prefilled message properly
-  useEffect(() => {
-    if (!prefilledMessage) return;
-
-    const time = new Date().toLocaleTimeString([], {
-      hour: "2-digit",
-      minute: "2-digit",
-    });
-
-    // 1️⃣ Add the user's message first (avoid duplicates)
-    const hasUserMessage = inputs.some(
-      (m) => m.sender === "You" && m.text === prefilledMessage
-    );
-    if (!hasUserMessage) {
-      addInputs({ sender: "You", text: prefilledMessage, time });
+    if (prefilledMessage) {
+      setInputBox(prefilledMessage);
+      setTimeout(() => {
+        document
+          .querySelector("form")
+          ?.dispatchEvent(new Event("submit", { cancelable: true, bubbles: true }));
+      }, 800);
     }
+  }, [prefilledMessage]);
 
-    // 2️⃣ Find matching AI response
-    const userText = prefilledMessage.toLowerCase().trim();
-    const matched = sampleData.find(
-      (item) => item.question.toLowerCase() === userText
-    );
-    const replyText = matched
-      ? matched.response
-      : "Sorry, Did not understand your query!";
-
-    // 3️⃣ Add AI reply (avoid duplicate replies)
-    const alreadyHasReply = inputs.some(
-      (m) => m.sender === "Soul AI" && m.text === replyText
-    );
-    if (alreadyHasReply) return;
-
-    const timer = setTimeout(() => {
-      addInputs({
-        sender: "Soul AI",
-        text: replyText,
-        time: new Date().toLocaleTimeString([], {
-          hour: "2-digit",
-          minute: "2-digit",
-        }),
-      });
-    }, 600);
-
-    return () => clearTimeout(timer);
-  }, [prefilledMessage, inputs, addInputs]);
-
+  // ✅ responsive handling
   useEffect(() => {
     const handleResize = () => setIsMobile(window.innerWidth <= 768);
     window.addEventListener("resize", handleResize);
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
+  // ✅ single source of truth: context only
   const handleAskBtn = (e) => {
     e.preventDefault();
     if (!inputBox.trim()) return;
@@ -173,36 +135,30 @@ export default function Conversations() {
         )}
 
         <div className={cstyles.chatBoxMainContainer}>
-          {!isReady ? ( // ✅ Delay rendering until inputs restored
-            <div>Loading...</div>
-          ) : (
-            <>
-              {inputs.map((msg, i) => (
-                <div className={cstyles.chatCardContainer} key={i}>
-                  <div className={cstyles.imgUser}>
-                    <img
-                      src={
-                        msg.sender === "Soul AI"
-                          ? require("../../assets/logo.png")
-                          : require("../../assets/user.png")
-                      }
-                      alt={msg.sender}
-                      className={cstyles.avatar}
-                    />
-                  </div>
-                  <div>
-                    <div className={cstyles.textContent}>
-                      <span className={cstyles.user}>{msg.sender}</span>
-                      <p>{msg.text}</p>
-                    </div>
-                    <div className={cstyles.time}>
-                      <small>{msg.time}</small>
-                    </div>
-                  </div>
+          {inputs.map((msg, i) => (
+            <div className={cstyles.chatCardContainer} key={i}>
+              <div className={cstyles.imgUser}>
+                <img
+                  src={
+                    msg.sender === "Soul AI"
+                      ? require("../../assets/logo.png")
+                      : require("../../assets/user.png")
+                  }
+                  alt={msg.sender}
+                  className={cstyles.avatar}
+                />
+              </div>
+              <div>
+                <div className={cstyles.textContent}>
+                  <span className={cstyles.user}>{msg.sender}</span>
+                  <p>{msg.text}</p>
                 </div>
-              ))}
-            </>
-          )}
+                <div className={cstyles.time}>
+                  <small>{msg.time}</small>
+                </div>
+              </div>
+            </div>
+          ))}
 
           <div className={styles.chatBoxComponenet}>
             <form className={styles.chatboxSection} onSubmit={handleAskBtn}>
@@ -213,10 +169,12 @@ export default function Conversations() {
                 value={inputBox}
                 onChange={(e) => setInputBox(e.target.value)}
               />
-              <button type="submit" className={styles.btn}>
-                Ask
-              </button>
-              <button type="button" className={styles.btn} onClick={handleSaveBtn}>
+              <button type="submit" className={styles.btn}>Ask</button>
+              <button
+                type="button"
+                className={styles.btn}
+                onClick={handleSaveBtn}
+              >
                 Save
               </button>
             </form>

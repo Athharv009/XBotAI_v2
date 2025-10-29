@@ -14,21 +14,29 @@ export function AppProvider({ children }) {
     localStorage.setItem("inputs", JSON.stringify(inputs));
   }, [inputs]);
 
-  const addInputs = (msg, sender = "You") => {
-    const messageObj =
-      typeof msg === "string"
-        ? {
-            sender,
-            text: msg,
-            time: new Date().toLocaleTimeString([], {
+  const addInputs = (msg) => {
+  const messageObj =
+    typeof msg === "string"
+      ? {
+          sender: "You",
+          text: msg,
+          time: new Date().toLocaleTimeString([], {
+            hour: "2-digit",
+            minute: "2-digit",
+          }),
+        }
+      : {
+          ...msg,
+          time:
+            msg.time ||
+            new Date().toLocaleTimeString([], {
               hour: "2-digit",
               minute: "2-digit",
             }),
-          }
-        : msg;
+        };
+  setInputs((prev) => [...prev, messageObj]);
+};
 
-    setInputs((prev) => [...prev, messageObj]);
-  };
 
   const clearInputs = () => {
     setInputs([]);
