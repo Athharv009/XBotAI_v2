@@ -13,31 +13,30 @@ export default function Conversations() {
   const [showModal, setShowModal] = useState(false);
   const [feedback, setFeedback] = useState("");
   const navigate = useNavigate();
-
   const { inputs, addInputs } = useContext(AppContext);
   const location = useLocation();
   const prefilledMessage = location.state?.message || "";
 
-  // ✅ remove localInputs — we now rely only on context `inputs`
+  // ✅ auto-submit if message passed from Home
   useEffect(() => {
     if (prefilledMessage) {
       setInputBox(prefilledMessage);
       setTimeout(() => {
         document
           .querySelector("form")
-          ?.dispatchEvent(
-            new Event("submit", { cancelable: true, bubbles: true })
-          );
+          ?.dispatchEvent(new Event("submit", { cancelable: true, bubbles: true }));
       }, 800);
     }
   }, [prefilledMessage]);
 
+  // ✅ responsive handling
   useEffect(() => {
     const handleResize = () => setIsMobile(window.innerWidth <= 768);
     window.addEventListener("resize", handleResize);
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
+  // ✅ single source of truth: context only
   const handleAskBtn = (e) => {
     e.preventDefault();
     if (!inputBox.trim()) return;
@@ -47,7 +46,6 @@ export default function Conversations() {
       minute: "2-digit",
     });
 
-    // add user message to context
     const userMsg = { sender: "You", text: inputBox, time };
     addInputs(userMsg);
 
@@ -71,7 +69,6 @@ export default function Conversations() {
       }),
     };
 
-    // add bot reply
     addInputs(reply);
   };
 
@@ -89,10 +86,9 @@ export default function Conversations() {
       Object.entries(savedChats).filter(([key]) => key.includes(today))
     );
 
-    // ✅ use inputs (not localInputs)
     todayChats[newKey] = inputs;
-
     localStorage.setItem("chatMessages", JSON.stringify(todayChats));
+
     feedbacks.push({ chatId: newKey, date: today, feedback });
     localStorage.setItem("feedbacks", JSON.stringify(feedbacks));
 
@@ -173,9 +169,7 @@ export default function Conversations() {
                 value={inputBox}
                 onChange={(e) => setInputBox(e.target.value)}
               />
-              <button type="submit" className={styles.btn}>
-                Ask
-              </button>
+              <button type="submit" className={styles.btn}>Ask</button>
               <button
                 type="button"
                 className={styles.btn}
