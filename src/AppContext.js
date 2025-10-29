@@ -4,8 +4,24 @@ export const AppContext = createContext();
 
 export function AppProvider({ children }) {
   const [inputs, setInputs] = useState(() => {
-    const savedInputs = JSON.parse(localStorage.getItem("inputs"));
-    return savedInputs || [];
+    try {
+      const savedInputs = JSON.parse(localStorage.getItem("inputs"));
+      if (Array.isArray(savedInputs)) {
+        return savedInputs.map((msg) => ({
+          sender: msg.sender || "You",
+          text: msg.text || "",
+          time:
+            msg.time ||
+            new Date().toLocaleTimeString([], {
+              hour: "2-digit",
+              minute: "2-digit",
+            }),
+        }));
+      }
+    } catch (err) {
+      console.error("Error reading localStorage:", err);
+    }
+    return [];
   });
 
   const [debounceTimeout, setDebounceTimeout] = useState(null);
@@ -15,28 +31,28 @@ export function AppProvider({ children }) {
   }, [inputs]);
 
   const addInputs = (msg) => {
-  const messageObj =
-    typeof msg === "string"
-      ? {
-          sender: "You",
-          text: msg,
-          time: new Date().toLocaleTimeString([], {
-            hour: "2-digit",
-            minute: "2-digit",
-          }),
-        }
-      : {
-          ...msg,
-          time:
-            msg.time ||
-            new Date().toLocaleTimeString([], {
+    const messageObj =
+      typeof msg === "string"
+        ? {
+            sender: "You",
+            text: msg,
+            time: new Date().toLocaleTimeString([], {
               hour: "2-digit",
               minute: "2-digit",
             }),
-        };
-  setInputs((prev) => [...prev, messageObj]);
-};
+          }
+        : {
+            ...msg,
+            time:
+              msg.time ||
+              new Date().toLocaleTimeString([], {
+                hour: "2-digit",
+                minute: "2-digit",
+              }),
+          };
 
+    setInputs((prev) => [...prev, messageObj]);
+  };
 
   const clearInputs = () => {
     setInputs([]);
