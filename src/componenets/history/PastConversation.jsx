@@ -23,6 +23,17 @@ export default function PastConversation() {
     setFeedbacks(feedbackData);
   }, []);
 
+  useEffect(() => {
+    // ✅ Auto-include unsaved inputs for persistence
+    const liveInputs = JSON.parse(localStorage.getItem("inputs")) || [];
+    if (liveInputs.length > 0) {
+      setSavedChats((prev) => ({
+        ...prev,
+        temp_auto_saved_chat: liveInputs,
+      }));
+    }
+  }, []);
+
   const getFeedbackForDate = (dateString) => {
     const fb = feedbacks.find((f) => f.date === dateString);
     return fb ? fb.feedback : null;
@@ -64,13 +75,13 @@ export default function PastConversation() {
           ) : (
             Object.entries(savedChats)
               .sort((a, b) => b[0].localeCompare(a[0]))
-              .filter(([chatId]) => !chatId.startsWith("temp_"))
               .map(([chatId, chatData]) => {
                 const parts = chatId.split("_");
                 const timestamp = parts[parts.length - 1];
+
+                // ✅ Safe date parsing to prevent "Invalid time value"
                 let readableDate = "Unknown Date";
                 let dateOnly = "";
-
                 const parsedTimestamp = Number(timestamp);
                 if (!isNaN(parsedTimestamp) && parsedTimestamp > 0) {
                   const dateObj = new Date(parsedTimestamp);
