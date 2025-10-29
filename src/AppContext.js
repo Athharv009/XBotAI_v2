@@ -14,11 +14,11 @@ export function AppProvider({ children }) {
     localStorage.setItem("inputs", JSON.stringify(inputs));
   }, [inputs]);
 
-  const addInputs = (msg) => {
+  const addInputs = (msg, sender = "You") => {
     const messageObj =
       typeof msg === "string"
         ? {
-            sender: "You",
+            sender,
             text: msg,
             time: new Date().toLocaleTimeString([], {
               hour: "2-digit",
@@ -26,6 +26,7 @@ export function AppProvider({ children }) {
             }),
           }
         : msg;
+
     setInputs((prev) => [...prev, messageObj]);
   };
 
