@@ -7,16 +7,15 @@ import ChatBoxComponent from "../chatBox/ChatBoxComponent";
 
 export default function Home() {
   const [inputBox, setInputBox] = useState("");
-  const { setDebounceTimeout } = useContext(AppContext);
+  const { addInputs, setDebounceTimeout } = useContext(AppContext);
   const [toggler, setToggler] = useState(false);
   const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
-  const { addInputs } = useContext(AppContext);
   const navigate = useNavigate();
 
   useEffect(() => {
     const handler = setTimeout(() => {
       setDebounceTimeout(inputBox);
-    }, 5000);
+    }, 500);
     return () => clearTimeout(handler);
   }, [inputBox, setDebounceTimeout]);
 
@@ -26,28 +25,31 @@ export default function Home() {
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
+  const handleQuickMessage = (message) => {
+    addInputs({
+      sender: "You",
+      text: message,
+      time: new Date().toLocaleTimeString([], {
+        hour: "2-digit",
+        minute: "2-digit",
+      }),
+    });
+
+    navigate("/conversations", { state: { message } });
+  };
+
   const handleAskBtn = (e) => {
     e.preventDefault();
     if (!inputBox.trim()) return;
-    addInputs(inputBox);
-    navigate("/conversations");
-  };
-
-  const handleMessage1 = () => {
-    const message = "Hi, what is the weather?";
-    navigate("/conversations", { state: { message } });
-  };
-  const handleMessage2 = () => {
-    const message = "Hi, what is my location?";
-    navigate("/conversations", { state: { message } });
-  };
-  const handleMessage3 = () => {
-    const message = "Hi, what is the temperature?";
-    navigate("/conversations", { state: { message } });
-  };
-  const handleMessage4 = () => {
-    const message = "Hi, how are you?";
-    navigate("/conversations", { state: { message } });
+    addInputs({
+      sender: "You",
+      text: inputBox,
+      time: new Date().toLocaleTimeString([], {
+        hour: "2-digit",
+        minute: "2-digit",
+      }),
+    });
+    navigate("/conversations", { state: { message: inputBox } });
   };
 
   return (
@@ -97,21 +99,33 @@ export default function Home() {
 
           <div className={styles.mainGroupOption}>
             <div className={styles.groupOption}>
-              <div className={styles.optionCard} onClick={handleMessage1}>
+              <div
+                className={styles.optionCard}
+                onClick={() => handleQuickMessage("Hi, what is the weather?")}
+              >
                 <h3>Hi, what is the weather</h3>
                 <p>Get immediate AI generated response</p>
               </div>
-              <div className={styles.optionCard} onClick={handleMessage2}>
+              <div
+                className={styles.optionCard}
+                onClick={() => handleQuickMessage("Hi, what is my location?")}
+              >
                 <h3>Hi, what is my location</h3>
                 <p>Get immediate AI generated response</p>
               </div>
             </div>
             <div className={styles.groupOption}>
-              <div className={styles.optionCard} onClick={handleMessage3}>
+              <div
+                className={styles.optionCard}
+                onClick={() => handleQuickMessage("Hi, what is the temperature?")}
+              >
                 <h3>Hi, what is the temperature</h3>
                 <p>Get immediate AI generated response</p>
               </div>
-              <div className={styles.optionCard} onClick={handleMessage4}>
+              <div
+                className={styles.optionCard}
+                onClick={() => handleQuickMessage("Hi, how are you?")}
+              >
                 <h3>Hi, how are you</h3>
                 <p>Get immediate AI generated response</p>
               </div>
@@ -120,15 +134,24 @@ export default function Home() {
 
           {isMobile && (
             <div className={styles.mobileOptionView}>
-              <div className={styles.optionCard} onClick={handleMessage1}>
+              <div
+                className={styles.optionCard}
+                onClick={() => handleQuickMessage("Hi, what is the weather?")}
+              >
                 <h3>Hi, what is the weather</h3>
                 <p>Get immediate AI generated response</p>
               </div>
-              <div className={styles.optionCard} onClick={handleMessage2}>
+              <div
+                className={styles.optionCard}
+                onClick={() => handleQuickMessage("Hi, what is my location?")}
+              >
                 <h3>Hi, what is my location</h3>
                 <p>Get immediate AI generated response</p>
               </div>
-              <div className={styles.optionCard} onClick={handleMessage4}>
+              <div
+                className={styles.optionCard}
+                onClick={() => handleQuickMessage("Hi, how are you?")}
+              >
                 <h3>Hi, how are you</h3>
                 <p>Get immediate AI generated response</p>
               </div>
