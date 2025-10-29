@@ -17,26 +17,43 @@ export default function Conversations() {
   const location = useLocation();
   const prefilledMessage = location.state?.message || "";
 
-  // ✅ auto-submit if message passed from Home
   useEffect(() => {
-    if (prefilledMessage) {
-      setInputBox(prefilledMessage);
-      setTimeout(() => {
-        document
-          .querySelector("form")
-          ?.dispatchEvent(new Event("submit", { cancelable: true, bubbles: true }));
-      }, 800);
-    }
-  }, [prefilledMessage]);
+    if (!prefilledMessage) return;
 
-  // ✅ responsive handling
+    const userText = prefilledMessage.toLowerCase().trim();
+    const matched = sampleData.find(
+      (item) => item.question.toLowerCase() === userText
+    );
+    const replyText = matched
+      ? matched.response
+      : "Sorry, Did not understand your query!";
+
+    const alreadyHasReply = inputs.some(
+      (m) => m.sender === "Soul AI" && m.text === replyText
+    );
+    if (alreadyHasReply) return;
+
+    const timer = setTimeout(() => {
+      const reply = {
+        sender: "Soul AI",
+        text: replyText,
+        time: new Date().toLocaleTimeString([], {
+          hour: "2-digit",
+          minute: "2-digit",
+        }),
+      };
+      addInputs(reply);
+    }, 600);
+
+    return () => clearTimeout(timer);
+  }, [prefilledMessage, inputs, addInputs]);
+
   useEffect(() => {
     const handleResize = () => setIsMobile(window.innerWidth <= 768);
     window.addEventListener("resize", handleResize);
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
-  // ✅ single source of truth: context only
   const handleAskBtn = (e) => {
     e.preventDefault();
     if (!inputBox.trim()) return;
@@ -169,7 +186,9 @@ export default function Conversations() {
                 value={inputBox}
                 onChange={(e) => setInputBox(e.target.value)}
               />
-              <button type="submit" className={styles.btn}>Ask</button>
+              <button type="submit" className={styles.btn}>
+                Ask
+              </button>
               <button
                 type="button"
                 className={styles.btn}

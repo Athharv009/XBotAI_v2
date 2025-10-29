@@ -4,20 +4,17 @@ export const AppContext = createContext();
 
 export function AppProvider({ children }) {
   const [inputs, setInputs] = useState([]);
-  const [debounceTimeout, setDebounceTimeout] = useState("");
+  const [debounceTimeout, setDebounceTimeout] = useState(null);
 
-  // ✅ Load messages from localStorage on first load
   useEffect(() => {
     const savedInputs = JSON.parse(localStorage.getItem("inputs")) || [];
     setInputs(savedInputs);
   }, []);
 
-  // ✅ Keep localStorage in sync whenever inputs change
   useEffect(() => {
     localStorage.setItem("inputs", JSON.stringify(inputs));
   }, [inputs]);
 
-  // ✅ Add new message to context
   const addInputs = (msg) => {
     const messageObj =
       typeof msg === "string"
@@ -33,7 +30,6 @@ export function AppProvider({ children }) {
     setInputs((prev) => [...prev, messageObj]);
   };
 
-  // ✅ Clear all inputs (used after Save)
   const clearInputs = () => {
     setInputs([]);
     localStorage.removeItem("inputs");
@@ -46,7 +42,7 @@ export function AppProvider({ children }) {
         addInputs,
         clearInputs,
         debounceTimeout,
-        setDebounceTimeout, // ✅ Added here to fix the Home.jsx error
+        setDebounceTimeout, 
       }}
     >
       {children}

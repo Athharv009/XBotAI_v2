@@ -16,7 +16,7 @@ export default function Home() {
   useEffect(() => {
     const handler = setTimeout(() => {
       setDebounceTimeout(inputBox);
-    }, 500);
+    }, 5000);
     return () => clearTimeout(handler);
   }, [inputBox, setDebounceTimeout]);
 
