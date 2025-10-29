@@ -18,26 +18,7 @@ export default function Conversations() {
   const location = useLocation();
   const prefilledMessage = location.state?.message || "";
 
-  const [localInputs, setLocalInputs] = useState(() => {
-    const saved = localStorage.getItem("inputs");
-    return saved ? JSON.parse(saved) : [];
-  });
-
-  useEffect(() => {
-    if (inputs.length > 0) {
-      setLocalInputs(inputs);
-    } else {
-      const saved = localStorage.getItem("inputs");
-      if (saved) setLocalInputs(JSON.parse(saved));
-    }
-  }, [inputs]);
-
-  useEffect(() => {
-    const handleResize = () => setIsMobile(window.innerWidth <= 768);
-    window.addEventListener("resize", handleResize);
-    return () => window.removeEventListener("resize", handleResize);
-  }, []);
-
+  // ✅ remove localInputs — we now rely only on context `inputs`
   useEffect(() => {
     if (prefilledMessage) {
       setInputBox(prefilledMessage);
@@ -51,6 +32,12 @@ export default function Conversations() {
     }
   }, [prefilledMessage]);
 
+  useEffect(() => {
+    const handleResize = () => setIsMobile(window.innerWidth <= 768);
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
+
   const handleAskBtn = (e) => {
     e.preventDefault();
     if (!inputBox.trim()) return;
@@ -60,10 +47,9 @@ export default function Conversations() {
       minute: "2-digit",
     });
 
-    addInputs({ sender: "You", text: inputBox, time });
-    const newInputs = [...localInputs, { sender: "You", text: inputBox, time }];
-    setLocalInputs(newInputs);
-    localStorage.setItem("inputs", JSON.stringify(newInputs));
+    // add user message to context
+    const userMsg = { sender: "You", text: inputBox, time };
+    addInputs(userMsg);
 
     const userText = inputBox.toLowerCase().trim();
     setInputBox("");
@@ -76,16 +62,17 @@ export default function Conversations() {
       ? matched.response
       : "Sorry, Did not understand your query!";
 
-    const replyTime = new Date().toLocaleTimeString([], {
-      hour: "2-digit",
-      minute: "2-digit",
-    });
+    const reply = {
+      sender: "Soul AI",
+      text: replyText,
+      time: new Date().toLocaleTimeString([], {
+        hour: "2-digit",
+        minute: "2-digit",
+      }),
+    };
 
-    const reply = { sender: "Soul AI", text: replyText, time: replyTime };
+    // add bot reply
     addInputs(reply);
-    const updated = [...newInputs, reply];
-    setLocalInputs(updated);
-    localStorage.setItem("inputs", JSON.stringify(updated));
   };
 
   const handleSaveBtn = () => {
@@ -102,7 +89,8 @@ export default function Conversations() {
       Object.entries(savedChats).filter(([key]) => key.includes(today))
     );
 
-    todayChats[newKey] = localInputs;
+    // ✅ use inputs (not localInputs)
+    todayChats[newKey] = inputs;
 
     localStorage.setItem("chatMessages", JSON.stringify(todayChats));
     feedbacks.push({ chatId: newKey, date: today, feedback });
@@ -151,7 +139,7 @@ export default function Conversations() {
         )}
 
         <div className={cstyles.chatBoxMainContainer}>
-          {localInputs.map((msg, i) => (
+          {inputs.map((msg, i) => (
             <div className={cstyles.chatCardContainer} key={i}>
               <div className={cstyles.imgUser}>
                 <img
