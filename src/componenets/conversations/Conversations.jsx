@@ -12,10 +12,16 @@ export default function Conversations() {
   const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
   const [showModal, setShowModal] = useState(false);
   const [feedback, setFeedback] = useState("");
+  const [isReady, setIsReady] = useState(false); // ✅ Added state
   const navigate = useNavigate();
   const { inputs, addInputs } = useContext(AppContext);
   const location = useLocation();
   const prefilledMessage = location.state?.message || "";
+
+  // ✅ Wait for context to restore inputs before rendering
+  useEffect(() => {
+    if (inputs) setIsReady(true);
+  }, [inputs]);
 
   // ✅ FIXED SECTION: Handle prefilled message properly
   useEffect(() => {
@@ -167,30 +173,36 @@ export default function Conversations() {
         )}
 
         <div className={cstyles.chatBoxMainContainer}>
-          {inputs.map((msg, i) => (
-            <div className={cstyles.chatCardContainer} key={i}>
-              <div className={cstyles.imgUser}>
-                <img
-                  src={
-                    msg.sender === "Soul AI"
-                      ? require("../../assets/logo.png")
-                      : require("../../assets/user.png")
-                  }
-                  alt={msg.sender}
-                  className={cstyles.avatar}
-                />
-              </div>
-              <div>
-                <div className={cstyles.textContent}>
-                  <span className={cstyles.user}>{msg.sender}</span>
-                  <p>{msg.text}</p>
+          {!isReady ? ( // ✅ Delay rendering until inputs restored
+            <div>Loading...</div>
+          ) : (
+            <>
+              {inputs.map((msg, i) => (
+                <div className={cstyles.chatCardContainer} key={i}>
+                  <div className={cstyles.imgUser}>
+                    <img
+                      src={
+                        msg.sender === "Soul AI"
+                          ? require("../../assets/logo.png")
+                          : require("../../assets/user.png")
+                      }
+                      alt={msg.sender}
+                      className={cstyles.avatar}
+                    />
+                  </div>
+                  <div>
+                    <div className={cstyles.textContent}>
+                      <span className={cstyles.user}>{msg.sender}</span>
+                      <p>{msg.text}</p>
+                    </div>
+                    <div className={cstyles.time}>
+                      <small>{msg.time}</small>
+                    </div>
+                  </div>
                 </div>
-                <div className={cstyles.time}>
-                  <small>{msg.time}</small>
-                </div>
-              </div>
-            </div>
-          ))}
+              ))}
+            </>
+          )}
 
           <div className={styles.chatBoxComponenet}>
             <form className={styles.chatboxSection} onSubmit={handleAskBtn}>
@@ -204,11 +216,7 @@ export default function Conversations() {
               <button type="submit" className={styles.btn}>
                 Ask
               </button>
-              <button
-                type="button"
-                className={styles.btn}
-                onClick={handleSaveBtn}
-              >
+              <button type="button" className={styles.btn} onClick={handleSaveBtn}>
                 Save
               </button>
             </form>
