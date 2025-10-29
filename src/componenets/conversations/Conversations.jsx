@@ -17,7 +17,6 @@ export default function Conversations() {
   const location = useLocation();
   const prefilledMessage = location.state?.message || "";
 
-  // ✅ auto-submit if message passed from Home
   useEffect(() => {
     if (prefilledMessage) {
       setInputBox(prefilledMessage);
@@ -29,14 +28,12 @@ export default function Conversations() {
     }
   }, [prefilledMessage]);
 
-  // ✅ responsive handling
   useEffect(() => {
     const handleResize = () => setIsMobile(window.innerWidth <= 768);
     window.addEventListener("resize", handleResize);
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
-  // ✅ single source of truth: context only
   const handleAskBtn = (e) => {
     e.preventDefault();
     if (!inputBox.trim()) return;
